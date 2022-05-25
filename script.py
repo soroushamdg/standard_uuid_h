@@ -59,16 +59,34 @@ def extractinfo():
     text = text.splitlines()
     for line in text:
         i_start = line.find("0x")
-        i_end = i_start + 5
+        i_end = i_start + 6
+
         uuid = line[i_start:i_end]
-        type = line[:i_start - 1 - 1]
+
+        type = line[:i_start - 1]
+        type = type.upper()
+        type = '_'.join(type.split())
+        type = re.sub("[^a-zA-Z]", "", type)
+
         for_ = line[i_end + 1:]
-        uuids.append(BLEUUID(type, uuid, for_))
+        for_ = for_.upper()
+        for_ = '_'.join(for_.split())
+        for_ = re.sub("[^a-zA-Z]", "", for_)
+
+        bleuuid = BLEUUID(type, uuid, for_)
+        uuids.append(bleuuid)
+        print(f"{bleuuid.uuid} -> {bleuuid.for_} -> {bleuuid.type}")
+
+
+def makedoth():
+    with open('BLE_UUIDS.h', 'w', encoding="utf-8") as doth:
+        for uuid in uuids:
+            doth.writelines([f"#define {uuid.type}_{uuid.for_} {uuid.uuid}\n"])
+        doth.close()
 
 
 openfile()
 removeheader()
 removefooter()
 extractinfo()
-# for i in uuids:
-#     print(f"{i.uuid} : {i.type}")
+makedoth()
