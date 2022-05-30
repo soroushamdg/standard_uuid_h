@@ -84,6 +84,22 @@ def makedoth():
             doth.writelines([f"#define {uuid.type}_{uuid.for_} {uuid.uuid}\n"])
         doth.close()
 
+    with open('uuidbank.dart', 'w', encoding="utf-8") as dotdart:
+        dotdart.writelines([
+            '''
+        // Use as such : 
+        Guid({CONST VALUE});
+         '''
+        ])
+
+        dotdart.writelines(['class UUIDBANK {'])
+
+        for uuid in uuids:
+            dotdart.writelines(
+                [f"static const {uuid.type}_{uuid.for_} = {uuid.uuid};"])
+
+        dotdart.writelines(['}'])
+
 
 openfile()
 removeheader()
